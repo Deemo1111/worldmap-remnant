@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Map</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
+          crossorigin=""/>
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        #map {
+            width: 100%;
+            height: 100vh;
+        }
+        
+        .zoom-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        
+        .zoom-controls button {
+            display: block;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: #f8f9fa;
+            border-radius: 4px;
+            margin: 5px 0;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        
+        .zoom-controls button:hover {
+            background: #e9ecef;
+        }
+        
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            max-width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    
+    <div class="zoom-controls">
+        <button onclick="zoomIn()">+</button>
+        <button onclick="zoomOut()">-</button>
+        <button onclick="resetView()">⌂</button>
+    </div>
+    
+    <div class="info-panel">
+        <h3>🗺️ Kontrol Peta</h3>
+        <p>• Scroll mouse untuk zoom</p>
+        <p>• Drag untuk berpindah</p>
+        <p>• Tombol +/- untuk kontrol zoom</p>
+    </div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" 
+            crossorigin=""></script>
+    
+    <script>
+        // Inisialisasi peta
+        const map = L.map('map', {
+            center: [0, 0],
+            zoom: 5,
+            minZoom: -2,
+            maxZoom: 5,
+            crs: L.CRS.Simple
+        });
+
+        // Dimensi gambar (sesuaikan dengan ukuran gambar Anda)
+        const imageWidth = 4000;
+        const imageHeight = 3000;
+        
+        // Hitung bounds untuk gambar
+        const southWest = map.unproject([0, imageHeight], map.getMaxZoom()-1);
+        const northEast = map.unproject([imageWidth, 0], map.getMaxZoom()-1);
+        const bounds = new L.LatLngBounds(southWest, northEast);
+
+        // Tambahkan gambar sebagai layer
+        L.imageOverlay(
+            'World_Map_Remnant.jpg', 
+            bounds
+        ).addTo(map);
+
+        // Set view awal ke tengah gambar
+        map.fitBounds(bounds);
+
+        // Fungsi kontrol zoom
+        function zoomIn() {
+            map.zoomIn();
+        }
+
+        function zoomOut() {
+            map.zoomOut();
+        }
+
+        function resetView() {
+            map.fitBounds(bounds);
+        }
+
+        // Handle resize
+        window.addEventListener('resize', function() {
+            map.invalidateSize();
+        });
+
+        // Tambahkan attribution
+        map.attributionControl.setPrefix('Powered by Leaflet');
+    </script>
+</body>
+</html>
